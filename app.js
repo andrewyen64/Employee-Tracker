@@ -35,7 +35,7 @@ function mainMenu() {
         choices: [
             "+ Add Department","+ Add Role","+ Add Employee",
             "* View Current Departments", "* View Current Roles", "* View Current Employees",
-            "^ Update Employee Role",
+            "^ Update Employee Role", "^ Update Employee Manager",
             "- Delete Department", "- Delete Role", "- Delete Employee",
             "== END APPLICATION =="
         ],
@@ -68,6 +68,10 @@ function mainMenu() {
 
             case "^ Update Employee Role":
                 updateEmployeeRole();
+                break;
+
+            case "^ Update Employee Manager":
+                updateEmployeeManager();
                 break;
             
             case "- Delete Department":
@@ -171,7 +175,6 @@ function addEmployee() {
     })
 }
 
-
 // Displays all Department names
 function viewDepartments() {
     connection.query("SELECT * FROM department", (err, data) => {
@@ -211,7 +214,7 @@ function updateEmployeeRole() {
             name: "lastName"
         }, 
         {
-            message: "Enter the new role ID.",
+            message: "Enter the new role ID for this employee.",
             type: "number",
             name: "roleId"
         }
@@ -228,6 +231,38 @@ function updateEmployeeRole() {
     })
 }
 
+// Updates the title of an employee's role
+function updateEmployeeManager() {
+    inquirer.prompt([
+        {
+            message: "Enter the first name of the employee.",
+            type: "input",
+            name: "firstName"
+        }, 
+        {
+            message: "Enter their last name.",
+            type: "input",
+            name: "lastName"
+        }, 
+        {
+            message: "Enter the new manager ID for this employee.",
+            type: "number",
+            name: "managerId"
+        }
+    ]).then(res => {
+        connection.query(
+            "UPDATE employee SET manager_id = ? WHERE first_name = ? AND last_name = ?", 
+            [res.managerId, res.firstName, res.lastName], (err, data) => {
+                console.log("----------------------------------------------------------------------------------");                
+                console.log("Updated manager ID of ", res.firstName, " ", res.lastName, " to ", res.managerId);
+                console.log("----------------------------------------------------------------------------------");                
+            }
+        )
+        mainMenu();
+    })
+}
+
+
 // Deletes the inputted department from the table in the database.
 function deleteDepartment() {
     inquirer.prompt([
@@ -240,9 +275,8 @@ function deleteDepartment() {
         connection.query(
             "DELETE FROM department WHERE name = ?", [res.name], (err, data) => {
                 console.log("----------------------------------------------");                
-                console.log("Successfully DELETED department: ", res.name);
+                console.log("Deleted department: ", res.name);
                 console.log("----------------------------------------------");                
-
             }
         )
         mainMenu();
@@ -260,7 +294,7 @@ function deleteRole() {
     ]).then(res => {
         connection.query(
             "DELETE FROM role WHERE title = ?", [res.title], (err, data) => {
-                console.log("DELETED role: ", res.title);
+                console.log("Deleted role: ", res.title);
             }
         )
         mainMenu();
@@ -284,7 +318,7 @@ function deleteEmployee() {
         connection.query(
             "DELETE FROM employee WHERE first_name = ? AND last_name = ?", 
             [res.firstName, res.lastName], (err, data) => {
-                console.log("DELETED employee: ", res.firstName, " ", res.lastName);
+                console.log("Deleted employee: ", res.firstName, " ", res.lastName);
             }
         )
         mainMenu();
