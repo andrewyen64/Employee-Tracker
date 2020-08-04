@@ -33,43 +33,55 @@ function mainMenu() {
         name: "action",
         message: "Choose what you want to do from the list of options: ",
         choices: [
-            "Add Department","Add Role","Add Employee",
-            "View Current Departments", "View Current Roles", "View Current Employees",
-            // "Delete Department", "Delete Role", "Delete Employee",
-            "Update Employee Role",
-            "End Application"
+            "+ Add Department","+ Add Role","+ Add Employee",
+            "* View Current Departments", "* View Current Roles", "* View Current Employees",
+            "^ Update Employee Role",
+            "- Delete Department", "- Delete Role", "- Delete Employee",
+            "== END APPLICATION =="
         ],
     }]).then(res => {
         console.log(res.action);
         switch (res.action) {
-            case "Add Department":
+            case "+ Add Department":
                 addDepartment()
                 break;
 
-            case "Add Role":
+            case "+ Add Role":
                 addRole()
                 break;
 
-            case "Add Employee":
+            case "+ Add Employee":
                 addEmployee()
                 break;
                                         
-            case "View Current Departments":
+            case "* View Current Departments":
                 viewDepartments()
                 break;
 
-            case "View Current Roles":
+            case "* View Current Roles":
                 viewRoles()
                 break;
-
-            case "View Current Employees":
+            
+            case "* View Current Employees":
                 viewEmployees()
                 break;
 
-            case "Update Employee Role":
-                updateRole();
+            case "^ Update Employee Role":
+                updateEmployeeRole();
+                break;
+            
+            case "* Delete Department":
+                deleteDepartment()
                 break;
 
+            case "* Delete Role":
+                deleteRole()
+                break;
+
+            case "* Delete Employee":
+                deleteEmployee()
+                break;
+                
             default:
                 connection.end()
                 break;
@@ -86,7 +98,6 @@ function addDepartment() {
     }).then(res => {
         connection.query("INSERT INTO department (name) VALUES (?)", [res.department], (err, data) => {
             if (err) throw err;
-            console.table(data);
             console.log("Successfully added new department: ", res.department);
             mainMenu();
         })
@@ -115,7 +126,6 @@ function addRole() {
         connection.query("INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)", 
         [res.title, res.salary, res.department_id], function (err, data) {
             if (err) throw err;
-            console.table(data);
             console.log("Successfully added new role: ", res.title);
             mainMenu();
         })  
@@ -150,7 +160,6 @@ function addEmployee() {
         [res.firstName, res.lastName, res.roleId], (err, data) => {
             if (err) throw err;
             console.log("Successfully added new employee: ", res.firstName, " ", res.lastName);
-            console.table(data);
             mainMenu();
         })
     })
@@ -181,8 +190,9 @@ function viewEmployees() {
     })
 }
 
+
 // Updates the title of an employee's role
-function updateRole() {
+function updateEmployeeRole() {
     inquirer.prompt([
         {
             message: "Enter the first name of the to be updated employee.",
@@ -197,12 +207,12 @@ function updateRole() {
         {
             message: "Enter the new role ID.",
             type: "number",
-            name: "role_id"
+            name: "roleId"
         }
     ]).then(res => {
         connection.query(
             "UPDATE employee SET role_id = ? WHERE first_name = ? AND last_name = ?", 
-            [res.role_id, res.firstName, res.lastName], (err, data) => {
+            [res.roleId, res.firstName, res.lastName], (err, data) => {
                 console.table(data);
             }
         )
@@ -211,5 +221,3 @@ function updateRole() {
 
 }
 
-// If safe updates mode is on, run this code in MySQL to turn it off: SET SQL_SAFE_UPDATES = 0;
-// This should fix any errors with the delete options.
