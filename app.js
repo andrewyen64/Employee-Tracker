@@ -200,7 +200,7 @@ function viewEmployees() {
 }
 
 
-// Updates the title of an employee's role
+// Updates the role ID of an employee.
 function updateEmployeeRole() {
     inquirer.prompt([
         {
@@ -231,7 +231,7 @@ function updateEmployeeRole() {
     })
 }
 
-// Updates the title of an employee's role
+// Updates the manager ID of an employee.
 function updateEmployeeManager() {
     inquirer.prompt([
         {
