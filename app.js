@@ -70,15 +70,15 @@ function mainMenu() {
                 updateEmployeeRole();
                 break;
             
-            case "* Delete Department":
+            case "- Delete Department":
                 deleteDepartment()
                 break;
 
-            case "* Delete Role":
+            case "- Delete Role":
                 deleteRole()
                 break;
 
-            case "* Delete Employee":
+            case "- Delete Employee":
                 deleteEmployee()
                 break;
                 
@@ -98,7 +98,9 @@ function addDepartment() {
     }).then(res => {
         connection.query("INSERT INTO department (name) VALUES (?)", [res.department], (err, data) => {
             if (err) throw err;
-            console.log("Successfully added new department: ", res.department);
+            console.log("----------------------------------------");
+            console.log("Added new department: ", res.department);
+            console.log("----------------------------------------");
             mainMenu();
         })
     })
@@ -126,7 +128,9 @@ function addRole() {
         connection.query("INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)", 
         [res.title, res.salary, res.department_id], function (err, data) {
             if (err) throw err;
-            console.log("Successfully added new role: ", res.title);
+            console.log("--------------------------------");
+            console.log("Added new role: ", res.title);
+            console.log("--------------------------------");
             mainMenu();
         })  
     })
@@ -159,7 +163,9 @@ function addEmployee() {
         connection.query("INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)", 
         [res.firstName, res.lastName, res.roleId], (err, data) => {
             if (err) throw err;
-            console.log("Successfully added new employee: ", res.firstName, " ", res.lastName);
+            console.log("------------------------------------------------------");
+            console.log("Added new employee: ", res.firstName, " ", res.lastName);
+            console.log("------------------------------------------------------");
             mainMenu();
         })
     })
@@ -213,11 +219,75 @@ function updateEmployeeRole() {
         connection.query(
             "UPDATE employee SET role_id = ? WHERE first_name = ? AND last_name = ?", 
             [res.roleId, res.firstName, res.lastName], (err, data) => {
-                console.table(data);
+                console.log("----------------------------------------------------------------------------------");                
+                console.log("Updated role ID of ", res.firstName, " ", res.lastName, " to ", res.roleId);
+                console.log("----------------------------------------------------------------------------------");                
             }
         )
         mainMenu();
     })
+}
 
+// Deletes the inputted department from the table in the database.
+function deleteDepartment() {
+    inquirer.prompt([
+        {
+            message: "Enter the name of the to be deleted department.",
+            type: "input",
+            name: "name"
+        }
+    ]).then(res => {
+        connection.query(
+            "DELETE FROM department WHERE name = ?", [res.name], (err, data) => {
+                console.log("----------------------------------------------");                
+                console.log("Successfully DELETED department: ", res.name);
+                console.log("----------------------------------------------");                
+
+            }
+        )
+        mainMenu();
+    })
+}
+
+// Deletes the inputted role from the table in the database.
+function deleteRole() {
+    inquirer.prompt([
+        {
+            message: "Enter the title of the role to be deleted.",
+            type: "input",
+            name: "title"
+        }
+    ]).then(res => {
+        connection.query(
+            "DELETE FROM role WHERE title = ?", [res.title], (err, data) => {
+                console.log("DELETED role: ", res.title);
+            }
+        )
+        mainMenu();
+    })
+}
+
+// Deletes the inputted employee from the table in the database.
+function deleteEmployee() {
+    inquirer.prompt([
+        {
+            message: "Enter the first name of the to be deleted employee.",
+            type: "input",
+            name: "firstName"
+        }, 
+        {
+            message: "Enter their last name.",
+            type: "input",
+            name: "lastName"
+        }
+    ]).then(res => {
+        connection.query(
+            "DELETE FROM employee WHERE first_name = ? AND last_name = ?", 
+            [res.firstName, res.lastName], (err, data) => {
+                console.log("DELETED employee: ", res.firstName, " ", res.lastName);
+            }
+        )
+        mainMenu();
+    })
 }
 
